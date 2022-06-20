@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+{% block title %}Home{% endblock title %}
+{% block content %}
+	{% for film in films %}
+		<a href="{{ film.get_absolute_url }}"><h3>{{ film.title }}</h3></a>
+		<a href="{% url 'filter_year' film.created_year %}">{{ film.created_year }}</a><br>
+		Страна:
+		{% for name in film.country.all %}
+			<a href="{% url 'filter_country' name.country %}">{{ name.country }}</a>{% if not forloop.last %}, {% endif %}
+		{% endfor %}<br>
+		{% for name in film.tags.all %}
+			<a href="{% url 'filter_tag' name.tag %}">{{ name.tag }}</a>{% if not forloop.last %}, {% endif %}
+		{% endfor %}<br>
+	<img src="{{ film.image.url }}" alt="connect" style="max-height: 300px;">
+	{% endfor %}
+	{% include 'main/pagination.html' with page=films %}
+{% endblock content %}

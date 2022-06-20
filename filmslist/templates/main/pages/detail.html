@@ -1,0 +1,42 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ film.title }}{% endblock title %}
+{% block content %}
+	<h2>{{ film.title }}</h2>
+	Год: <a href="{% url 'filter_year' film.created_year %}">{{ film.created_year }}</a><br>
+	Страна:
+	{% for name in film.country.all %}
+		<a href="{% url 'filter_country' name.country %}">{{ name.country }}</a>{% if not forloop.last %}, {% endif %}
+	{% endfor %}<br>
+	Жанр:
+	{% for name in film.tags.all %}
+		<a href="{% url 'filter_tag' name.tag %}">{{ name.tag }}</a>{% if not forloop.last %}, {% endif %}
+	{% endfor %}<br>
+	<img src="{{ film.image.url }}" alt="connect" style="max-height: 300px;">
+	<h3>Описание</h3>
+	{{ film.description }}
+
+	{% with comments.count as total_comments %}
+		<h3>{{ total_comments }} comment{{ total_comments|pluralize }}</h3>
+	{% endwith %}
+	{% for comment in comments %}
+		<div class="comment-body">
+			<p>{{ comment.name }} {{ comment.created }}</p>
+			{{ comment.body }}
+		</div>
+	{% empty %}
+		<h2>No comments yet.</h2>
+	{% endfor %}
+	{% if new_comment %}
+		<h2>Your comment added </h2>
+	{% else %}
+		<form action="." method="post">
+			{{ comment_form.as_p }}
+			{% csrf_token %}
+			<p><input type="submit" value="Add comment"></p>
+		</form>
+	{% endif %}
+	<h2>Похожие фильмы</h2>
+	{% for film in similar_posts %}
+		<a href="{{ film.get_absolute_url }}">{{ film.title }}</a><br>
+	{% endfor %}
+{% endblock content %}
